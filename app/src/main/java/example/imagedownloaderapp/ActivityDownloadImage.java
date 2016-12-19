@@ -20,8 +20,6 @@ public class ActivityDownloadImage extends ActivityBase
 {
     private static final int PERMISSION_REQUEST_CODE = 1;
 
-    private Button m_btnPermission;
-
     /**
      * Name of the Intent Action that wills start this Activity.
      */
