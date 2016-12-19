@@ -66,6 +66,11 @@ public class MainActivity extends ActivityBase
         }
     }
 
+    public void btnSetDefaultOnClick(View view)
+    {
+        m_txtImageUrl.setText("http://40.media.tumblr.com/27fad26f418a40d3b84abb29b4bbf0d7/tumblr_npyv8a381H1swwwaso1_500.jpg");
+    }
+
     private void startDownloadImageActivity(Uri url)
     {
         if (url != null)
@@ -111,7 +116,7 @@ public class MainActivity extends ActivityBase
         }
         else if (resultCode == Activity.RESULT_CANCELED)
         {
-            UserInterfaceUtils.showToast(this, "failed to download " + GetUrlInput());
+            UserInterfaceUtils.showToast(this, "Download failed for " + GetUrlInput());
         }
 
         // allow user to click the download button again.

@@ -1,17 +1,27 @@
 package example.imagedownloaderapp;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 
 public class ActivityDownloadImage extends ActivityBase
 {
+    private static final int PERMISSION_REQUEST_CODE = 1;
+
+    private Button m_btnPermission;
+
     /**
      * Name of the Intent Action that wills start this Activity.
      */
@@ -35,15 +45,60 @@ public class ActivityDownloadImage extends ActivityBase
 
         // store the ProgressBar in a field for fast access.
         m_pbDownloading = (ProgressBar)findViewById(R.id.pbDownloading);
+
+        if (Build.VERSION.SDK_INT >= 23 && !checkPermission())
+        {
+            // request permission to write to external storage
+            requestPermission();
+        }
+        else
+        {
+            asyncTaskDownloadImage();
+        }
     }
 
-    /**
-     * Hook method called after onCreate() or after onRestart() (when
-     * the activity is being restarted from stopped state).  Should
-     * re-acquire resources relinquished when activity was stopped
-     * (onStop()) or acquire those resources for the first time after
-     * onCreate().
-     */
+    protected boolean checkPermission()
+    {
+        int result = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (result == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    protected void requestPermission()
+    {
+        String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        ActivityCompat.requestPermissions(this, permissions, PERMISSION_REQUEST_CODE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults)
+    {
+        switch (requestCode)
+        {
+            case PERMISSION_REQUEST_CODE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                {
+                    asyncTaskDownloadImage();
+                }
+                else
+                {
+                    UserInterfaceUtils.showToast(this, "Unable to continue without the required permissions.");
+
+                    // Set the result of the Activity.
+                    setActivityResult(ActivityDownloadImage.this, null);
+
+                    // Stop the Activity from running.
+                    ActivityDownloadImage.this.finish();
+                }
+                break;
+        }
+    }
+
     @Override
     protected void onStart() {
         // Always call super class for necessary
@@ -52,9 +107,6 @@ public class ActivityDownloadImage extends ActivityBase
 
         // Make progress bar visible.
         m_pbDownloading.setVisibility(View.VISIBLE);
-
-        //checkPermissions();
-        asyncTaskDownloadImage();
     }
 
     protected void asyncTaskDownloadImage()

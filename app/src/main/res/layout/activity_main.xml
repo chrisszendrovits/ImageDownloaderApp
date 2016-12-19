@@ -24,7 +24,14 @@
             android:ems="10"
             android:id="@+id/txtImageUrl"
             android:hint="Image Url"
-            android:text="https://pbs.twimg.com/profile_images/718212972238114817/z3pdO-eb.jpg" />
+            android:text="" />
+
+        <Button
+            android:text="Set Default"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnSetDefault"
+            android:onClick="btnSetDefaultOnClick" />
 
         <Button
             android:text="Download"
